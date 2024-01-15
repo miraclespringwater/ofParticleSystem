@@ -1,8 +1,4 @@
 #include "particle.h"
-#include "ofAppRunner.h"
-#include "ofGraphics.h"
-#include "ofMath.h"
-#include "ofUtils.h"
 
 particle::particle() {
 }
@@ -14,7 +10,7 @@ void particle::setup() {
 	vel.x = ofRandom(-4, 4);
 	vel.y = ofRandom(-4, 4);
 
-	frc = ofVec2f(0, 0); // no forces acting upon the particle at initialization
+	frc = ofVec2f(0, 0);
 
 	uniqueVal.x = ofRandom(-1000, 1000);
 	uniqueVal.y = ofRandom(-1000, 1000);
@@ -25,9 +21,6 @@ void particle::setup() {
 }
 
 void particle::update(float speed, float noise) {
-	// This is where all of the velocity and force updates are happening
-
-	// creating a "organic" force using ofSignedNoise ???
 	frc.x = ofSignedNoise(uniqueVal.x, ofGetElapsedTimeMillis());
 	frc.y = ofSignedNoise(uniqueVal.y, ofGetElapsedTimeMillis());
 
@@ -35,17 +28,18 @@ void particle::update(float speed, float noise) {
 
 	vel *= drag;
 
+	vel -= repelFrc;
+
 	vel += frc;
 
-	// Reset at border
-
+	//RESET AT BORDER
 	if (pos.x + vel.x > ofGetWidth()) {
 		pos.x -= ofGetWidth();
 	} else if (pos.x + vel.x < 0) {
 		pos.x += ofGetWidth();
 	}
 
-	if (pos.y + vel.y > ofGetWidth()) {
+	if (pos.y + vel.y > ofGetHeight()) {
 		pos.y -= ofGetHeight();
 	} else if (pos.y + vel.y < 0) {
 		pos.y += ofGetHeight();
@@ -57,4 +51,20 @@ void particle::update(float speed, float noise) {
 void particle::draw(float sizeDot) {
 
 	ofDrawCircle(pos.x, pos.y, size * sizeDot);
+}
+
+void particle::repel(vector<ofVec2f> repelPt) {
+	repelFrc.set(0, 0);
+
+	for (int i = 0; i < repelPt.size(); i++) {
+
+		float dist = pos.distance(repelPt[i]);
+
+		if (dist < 150) {
+
+			ofVec2f newRepelPt;
+			newRepelPt = repelPt[i] - pos;
+			repelFrc += newRepelPt * 0.0001;
+		}
+	}
 }

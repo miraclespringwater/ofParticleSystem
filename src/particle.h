@@ -1,6 +1,5 @@
 #pragma once
 #include "ofMain.h"
-#include "ofVec2f.h"
 
 class particle {
 public:
@@ -8,13 +7,16 @@ public:
 
 	void setup();
 	void update(float speed, float noise);
-	void draw(float sizeDot); // take in the size of the particle
+	void draw(float sizeDot);
+	void repel(vector<ofVec2f> repelPt);
 
-	ofVec2f pos; // vector for the position of the particle
-	ofVec2f vel; // vector for the velocity of the particle (the overall direction)
-	ofVec2f frc; // vector for all additional forces that influences the particle
-	float drag; // counteracts the overall speed
+	ofVec2f pos;
+	ofVec2f vel;
+	ofVec2f frc;
+	ofVec2f repelFrc;
+	float drag;
 
-	ofVec2f uniqueVal; // every particle will have a unique value, this value will influence the "noise"
-	float size; // size of the particle
+	ofVec2f uniqueVal;
+	float size;
 };
+
